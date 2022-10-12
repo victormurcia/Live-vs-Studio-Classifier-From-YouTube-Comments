@@ -20,6 +20,9 @@ from nltk.stem.wordnet import WordNetLemmatizer
 from nltk.tokenize import word_tokenize
 nltk.download('stopwords')
 nltk.download('wordnet')
+nltk.download('averaged_perceptron_tagger') #Used to determine context of word in sentence
+nltk.download('punkt') #Pretrained model to tokenize words
+nltk.download('omw-1.4')
 
 import pandas as pd
 import numpy as np
