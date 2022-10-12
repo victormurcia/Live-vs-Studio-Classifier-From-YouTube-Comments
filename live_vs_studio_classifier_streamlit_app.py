@@ -263,7 +263,7 @@ def gnb_classify_comments(df):
     classification = predictions_df[0].value_counts().index.tolist()[0]
     return classification
     
-def predict_live_studio(vid_df,translate=0):
+def predict_live_studio(vid_df,translate=False):
     #Remove unwanted characters from comments prior to tokenizing
     vid_df['comment_processed'] = vid_df['Comment'].map(lambda s:preprocess(s)) 
     
@@ -277,7 +277,7 @@ def predict_live_studio(vid_df,translate=0):
     #Join the results from above with a space
     vid_df['comment_processed'] = [' '.join(map(str, l)) for l in vid_df['comment_processed']]
     
-    if translate == 1:
+    if translate == True:
         #Get iso639 language code
         DetectorFactory.seed = 0
         vid_df['lang_iso639'] = vid_df['Comment'].apply(lambda x: detect_comment_language(x))
@@ -310,21 +310,22 @@ classifier = pickle.load(f)
 f.close()
 
 # Adding an appropriate title for the test website
-st.title("Predicting if Video is From Live or Studio Performance")
+st.title("Predicting if Music Video is From Live or Studio Performance")
 
 st.markdown("This app uses a Gaussian Naive Bayes classifier to predict whether a video is from a live or studio performance. Give it a try!")
 
-st.header('Enter a YouTube URL (Make sure that your video has comments :]')
+st.header('Enter a YouTube URL in the textbox below (Make sure that your video has comments :])')
 #Making dropdown select box containing scale, key, and octave choices
 url = st.text_input('YouTube URL:')
 
-col1, col2, col3 = st.columns(3)
+translate = st.checkbox('Translate comments to English? WARNING: Selecting this option increases processing time!', value = False)
+col1, col2,col3 = st.columns(3)
 
 with col1:
     pass
 with col2:
     center_button = st.button('Predict Performance Type')
-with col3 :
+with col3:
     pass
     
 if center_button:
@@ -335,7 +336,7 @@ if center_button:
     file = glob.glob("yt_comments.csv")[0]
     #Make the dataframe containing comments to process
     vid_df = make_main_comment_df(url,file,api_key)
-    prediction = predict_live_studio(vid_df,translate=0)
+    prediction = predict_live_studio(vid_df,translate=translate)
     st.success(f'The video is from a {prediction} recording')
     st.video(url, format="video/mp4", start_time=0)
     
